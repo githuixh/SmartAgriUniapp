@@ -1,0 +1,32 @@
+@font-face {
+  font-family: "iconfont";
+  src: url('iconfont.ttf') format('truetype');
+}
+
+.iconfont {
+  font-family: "iconfont" !important;
+  font-size: 16px;
+  font-style: normal;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+.icon-wallet:before {
+  content: "\e6b1";
+}
+
+.icon-box:before {
+  content: "\e6b2";
+}
+
+.icon-truck:before {
+  content: "\e6b3";
+}
+
+.icon-check:before {
+  content: "\e6b4";
+}
+
+.icon-refund:before {
+  content: "\e6b5";
+} 
