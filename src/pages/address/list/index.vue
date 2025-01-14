@@ -28,8 +28,7 @@
     
     <!-- 空状态 -->
     <view class="empty-state" v-else>
-      <image src="/static/empty-address.png" mode="aspectFit" class="empty-image"></image>
-      <text class="empty-text">暂无收货地址</text>
+      <text>暂无收货地址</text>
     </view>
     
     <!-- 底部按钮 -->
@@ -53,28 +52,22 @@ export default {
           district: '南山区',
           detail: '科技园南路88号',
           isDefault: true
-        },
-        {
-          id: 2,
-          name: '李四',
-          phone: '13800138001',
-          province: '广东省',
-          city: '深圳市',
-          district: '福田区',
-          detail: '福中路1000号',
-          isDefault: false
         }
       ]
     }
   },
+  onLoad(options) {
+    console.log('地址列表页面加载', options)
+  },
+  onShow() {
+    console.log('地址列表页面显示')
+  },
   methods: {
-    // 选择地址
     handleSelect(address) {
       // 如果是从其他页面跳转来选择地址的，则返回地址数据
       const pages = getCurrentPages()
       const prevPage = pages[pages.length - 2]
       if (prevPage && prevPage.route.includes('order')) {
-        // 返回上一页并传递地址数据
         uni.navigateBack({
           success: () => {
             prevPage.$vm.setAddress(address)
@@ -83,21 +76,18 @@ export default {
       }
     },
     
-    // 编辑地址
     handleEdit(address) {
       uni.navigateTo({
-        url: `/pages/address/edit?id=${address.id}`
+        url: `/pages/address/edit/index?id=${address.id}`
       })
     },
     
-    // 删除地址
     handleDelete(address) {
       uni.showModal({
         title: '提示',
         content: '确定要删除该地址吗？',
         success: (res) => {
           if (res.confirm) {
-            // TODO: 调用删除接口
             const index = this.addressList.findIndex(item => item.id === address.id)
             if (index > -1) {
               this.addressList.splice(index, 1)
@@ -111,10 +101,9 @@ export default {
       })
     },
     
-    // 新增地址
     handleAdd() {
       uni.navigateTo({
-        url: '/pages/address/edit'
+        url: '/pages/address/edit/index'
       })
     }
   }
@@ -194,21 +183,10 @@ export default {
 }
 
 .empty-state {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
   padding-top: 200rpx;
-}
-
-.empty-image {
-  width: 200rpx;
-  height: 200rpx;
-  margin-bottom: 20rpx;
-}
-
-.empty-text {
-  font-size: 28rpx;
+  text-align: center;
   color: #999;
+  font-size: 28rpx;
 }
 
 .footer {
@@ -222,7 +200,7 @@ export default {
 }
 
 .add-btn {
-  background: #07c160;
+  background: var(--primary-color);
   color: #fff;
   border-radius: 44rpx;
   font-size: 32rpx;

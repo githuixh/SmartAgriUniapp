@@ -157,7 +157,7 @@ export default {
     },
     goToAddress() {
       uni.navigateTo({
-        url: '/pages/address/list'
+        url: '/pages/address/list/index?from=user'
       })
     },
     navigateTo(url) {

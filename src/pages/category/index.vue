@@ -39,66 +39,32 @@
 </template>
 
 <script>
+import { categoryApi } from '@/api'
+
 export default {
   data() {
     return {
-      categories: [
-        {
-          id: 1,
-          name: '时令水果',
-          children: [
-            { id: 11, name: '苹果', type: 'apple' },
-            { id: 12, name: '橙子', type: 'orange' },
-            { id: 13, name: '香蕉', type: 'banana' },
-            { id: 14, name: '葡萄', type: 'grape' },
-            { id: 15, name: '芒果', type: 'mango' },
-            { id: 16, name: '西瓜', type: 'watermelon' }
-          ]
-        },
-        {
-          id: 2,
-          name: '新鲜蔬菜',
-          children: [
-            { id: 21, name: '叶菜类', type: 'leaf' },
-            { id: 22, name: '根茎类', type: 'root' },
-            { id: 23, name: '茄果类', type: 'fruit' },
-            { id: 24, name: '豆类', type: 'bean' },
-            { id: 25, name: '菌菇类', type: 'mushroom' }
-          ]
-        },
-        {
-          id: 3,
-          name: '地方特产',
-          children: [
-            { id: 31, name: '干果', type: 'nuts' },
-            { id: 32, name: '腊味', type: 'preserved' },
-            { id: 33, name: '山货', type: 'mountain' },
-            { id: 34, name: '土特产', type: 'local' }
-          ]
-        },
-        {
-          id: 4,
-          name: '粮油调味',
-          children: [
-            { id: 41, name: '大米', type: 'rice' },
-            { id: 42, name: '食用油', type: 'oil' },
-            { id: 43, name: '调味料', type: 'spice' },
-            { id: 44, name: '杂粮', type: 'grain' }
-          ]
-        }
-      ],
+      categories: [],
       currentCategory: {}
     }
   },
   created() {
-    this.currentCategory = this.categories[0]
+    this.getCategoryList()
   },
   methods: {
     // 切换分类
     switchCategory(category) {
       this.currentCategory = category
     },
-    
+    async getCategoryList() {
+      try {
+        const result = await categoryApi.getCategoryList()
+        console.log(result)
+        this.categories = result
+      } catch (error) {
+        console.error('获取分类列表失败:', error)
+      }
+    },
     // 跳转到商品列表
     goToList(subCategory) {
       uni.navigateTo({

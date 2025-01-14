@@ -70,7 +70,6 @@
 export default {
   data() {
     return {
-      isEdit: false,
       formData: {
         name: '',
         phone: '',
@@ -80,102 +79,56 @@ export default {
       }
     }
   },
-  onLoad(options) {
-    // 如果传入id则是编辑模式
-    if (options.id) {
-      this.isEdit = true
-      this.loadAddressDetail(options.id)
-    }
-  },
   methods: {
-    // 加载地址详情
-    loadAddressDetail(id) {
-      // TODO: 调用接口获取地址详情
-      // 这里模拟数据
-      const address = {
-        id: id,
-        name: '张三',
-        phone: '13800138000',
-        region: '广东省 深圳市 南山区',
-        detail: '科技园南路88号',
-        isDefault: true
-      }
-      this.formData = address
-    },
-    
-    // 显示地区选择器
     showRegionPicker() {
+      // 调用地区选择器
       uni.showToast({
-        title: '需要集成地区选择器组件',
+        title: '选择地区功能开发中',
         icon: 'none'
       })
     },
     
-    // 切换默认地址
     handleDefaultChange(e) {
       this.formData.isDefault = e.detail.value
     },
     
-    // 表单验证
-    validate() {
+    handleSave() {
+      // 表单验证
       if (!this.formData.name) {
-        uni.showToast({
+        return uni.showToast({
           title: '请输入收货人姓名',
           icon: 'none'
         })
-        return false
       }
       if (!this.formData.phone) {
-        uni.showToast({
+        return uni.showToast({
           title: '请输入手机号码',
           icon: 'none'
         })
-        return false
-      }
-      if (!/^1\d{10}$/.test(this.formData.phone)) {
-        uni.showToast({
-          title: '手机号码格式不正确',
-          icon: 'none'
-        })
-        return false
       }
       if (!this.formData.region) {
-        uni.showToast({
+        return uni.showToast({
           title: '请选择所在地区',
           icon: 'none'
         })
-        return false
       }
       if (!this.formData.detail) {
-        uni.showToast({
+        return uni.showToast({
           title: '请输入详细地址',
           icon: 'none'
         })
-        return false
       }
-      return true
-    },
-    
-    // 保存地址
-    handleSave() {
-      if (!this.validate()) return
       
-      // TODO: 调用保存接口
-      uni.showLoading({
-        title: '保存中...'
+      // TODO: 保存地址
+      uni.showToast({
+        title: '保存成功',
+        icon: 'success',
+        success: () => {
+          setTimeout(() => {
+            uni.navigateBack()
+          }, 1500)
+        }
       })
-      
-      setTimeout(() => {
-        uni.hideLoading()
-        uni.showToast({
-          title: '保存成功',
-          icon: 'success'
-        })
-        // 返回上一页
-        setTimeout(() => {
-          uni.navigateBack()
-        }, 1500)
-      }, 1000)
     }
   }
 }
@@ -196,7 +149,6 @@ export default {
 
 .form-item {
   display: flex;
-  align-items: flex-start;
   padding: 30rpx 0;
   border-bottom: 1rpx solid #f5f5f5;
 }
@@ -267,7 +219,7 @@ export default {
 }
 
 .save-btn {
-  background: #07c160;
+  background: var(--primary-color);
   color: #fff;
   border-radius: 44rpx;
   font-size: 32rpx;

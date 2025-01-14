@@ -17,6 +17,18 @@
 			"style": {
 				"navigationBarTitleText": "我的"
 			}
+		},
+		{
+			"path": "pages/address/list/index",
+			"style": {
+				"navigationBarTitleText": "收货地址"
+			}
+		},
+		{
+			"path": "pages/address/edit/index",
+			"style": {
+				"navigationBarTitleText": "编辑地址"
+			}
 		}
 	],
 	"subPackages": [
@@ -55,24 +67,6 @@
 					"path": "list/index",
 					"style": {
 						"navigationBarTitleText": "订单列表"
-					}
-				}
-			]
-		},
-		{
-			"root": "pages/address",
-			"pages": [
-				{
-					"path": "list/index",
-					"style": {
-						"navigationBarTitleText": "收货地址",
-						"enablePullDownRefresh": true
-					}
-				},
-				{
-					"path": "edit/index",
-					"style": {
-						"navigationBarTitleText": "编辑地址"
 					}
 				}
 			]
