@@ -39,7 +39,7 @@
 </template>
 
 <script>
-import { categoryApi } from '@/api'
+//import { categoryApi } from '@/api'
 
 export default {
   data() {
@@ -58,9 +58,9 @@ export default {
     },
     async getCategoryList() {
       try {
-        const result = await categoryApi.getCategoryList()
-        console.log(result)
-        this.categories = result
+        //const result = await categoryApi.getCategoryList()
+        //console.log(result)
+        //this.categories = result
       } catch (error) {
         console.error('获取分类列表失败:', error)
       }

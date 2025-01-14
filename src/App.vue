@@ -1,4 +1,6 @@
 <script>
+import { needAuth, checkLogin, goLogin } from '@/utils/auth'
+
 export default {
   onLaunch: function () {
     console.log('App Launch')
@@ -9,7 +11,33 @@ export default {
   onHide: function () {
     console.log('App Hide')
   },
+  onPageNotFound() {
+    uni.switchTab({
+      url: '/pages/index/index'
+    })
+  },
 }
+
+// 添加全局导航守卫
+uni.addInterceptor('navigateTo', {
+  invoke(e) {
+    if (needAuth(e.url) && !checkLogin()) {
+      goLogin()
+      return false
+    }
+    return true
+  }
+})
+
+uni.addInterceptor('switchTab', {
+  invoke(e) {
+    if (needAuth(e.url) && !checkLogin()) {
+      goLogin()
+      return false
+    }
+    return true
+  }
+})
 </script>
 
 <style>

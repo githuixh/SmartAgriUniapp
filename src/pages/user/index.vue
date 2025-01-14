@@ -125,6 +125,8 @@
 </template>
 
 <script>
+import { checkLogin } from '@/utils/auth'
+
 export default {
   data() {
     return {
@@ -145,6 +147,9 @@ export default {
     }
   },
   onShow() {
+    if (!checkLogin()) {
+      return
+    }
     this.getUserInfo()
     this.getUserStats()
   },
