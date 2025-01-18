@@ -7,6 +7,6 @@ export default {
   },
   // 微信登录
   wxLogin(data) {
-    return request.post('/user/wx-login', data)
+    return request.post('/wx/user/login', data)
   }
 } 

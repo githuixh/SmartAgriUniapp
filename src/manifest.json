@@ -50,10 +50,13 @@
             "minified" : true
         },
         "usingComponents" : true,
-        "requiredPrivateInfos" : [ "getLocation" ],
+        "requiredPrivateInfos": [
+            "chooseAddress", 
+            "chooseLocation"
+        ],
         "permission" : {
-            "scope.userInfo" : {
-                "desc" : "用于完善会员资料"
+            "scope.phoneNumber" : {
+                "desc" : "用于账号登录"
             }
         }
     },

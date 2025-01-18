@@ -132,7 +132,7 @@ export default {
     return {
       userInfo: {
         nickName: '测试用户',
-        avatarUrl: 'https://mmbiz.qpic.cn/mmbiz/icTdbqWNOwNRna42FI242Lcia07jQodd2FJGIYQfG0LAJGFxM4FbnQP6yfMxBgJ0F3YRqJCJ1aPAK2dQagdusBZg/0'
+        avatarUrl: 'http://tmp/Pwiq7Bi2DzF76ffbd0c1502747fcda1594aa1453b86d.jpeg'
       },
       orderNums: {
         pending: 2,

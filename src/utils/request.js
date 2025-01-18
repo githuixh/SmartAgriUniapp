@@ -1,6 +1,6 @@
 // 基础配置
 const config = {
-  baseURL: 'http://localhost:8080/farmer', // 基础URL
+  baseURL: 'http://localhost:8080', // 基础URL
   timeout: 10000, // 超时时间
   header: {
     'Content-Type': 'application/json'

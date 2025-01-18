@@ -15,68 +15,50 @@
     <!-- 登录表单 -->
     <view class="login-form">
       <view class="form-header">
-        <text class="form-title">账号登录</text>
-        <text class="form-desc">请使用手机号登录或微信一键登录</text>
+        <text class="form-title">登录/注册</text>
+        <text class="form-desc">请完善您的账号信息</text>
       </view>
-      <!-- 手机号输入 -->
-      <view class="input-group">
-        <view class="input-box">
-          <text class="iconfont icon-phone"></text>
-          <input 
-            class="input" 
-            type="number" 
-            maxlength="11" 
-            v-model="phone" 
-            placeholder="请输入手机号"
-          />
+      <!-- 头像和昵称 -->
+      <view class="user-info-box" v-if="showUserInfo">
+        <button 
+          class="avatar-wrapper" 
+          open-type="chooseAvatar" 
+          @chooseavatar="onChooseAvatar"
+        >
+          <image class="avatar" :src="formData.avatarUrl"></image>
+          <text class="tips">点击设置头像</text>
+        </button>
+        <input 
+          type="nickname" 
+          class="nickname-input"
+          placeholder="请输入昵称" 
+          v-model="formData.nickName"
+          @blur="onNickNameInput"
+        />
+      </view>
+      <!-- 微信登录按钮 -->
+      <button 
+        class="wx-login-btn" 
+        open-type="getPhoneNumber"
+        @getphonenumber="handleWxLogin"
+        v-if="!showUserInfo"
+      >
+        <view class="wx-btn-content">
+          <view class="wx-icon-wrap">
+            <text class="iconfont icon-wechat"></text>
+          </view>
+          <text class="btn-text">微信一键登录</text>
         </view>
-      </view>
-      
-      <!-- 验证码输入 -->
-      <view class="input-group">
-        <view class="input-box">
-          <text class="iconfont icon-safe"></text>
-          <input 
-            class="input" 
-            type="number" 
-            maxlength="6" 
-            v-model="code" 
-            placeholder="请输入验证码"
-          />
-          <button 
-            class="code-btn" 
-            :disabled="counting" 
-            @click="sendCode"
-          >
-            {{counting ? `${count}s` : '获取验证码'}}
-          </button>
-        </view>
-      </view>
-      
-      <!-- 登录按钮 -->
-      <button class="login-btn" @click="handleLogin">
-        <text class="btn-text">登录</text>
       </button>
       
-      <!-- 其他登录方式 -->
-      <view class="other-login">
-        <view class="login-methods">
-          <button 
-            class="wx-login-btn" 
-            @tap="getUserProfile"
-          >
-            <view class="wx-btn-content">
-              <view class="wx-icon-wrap">
-                <text class="iconfont icon-wechat"></text>
-              </view>
-              <text class="btn-text">微信一键登录</text>
-            </view>
-          </button>
-        </view>
-        <view class="divider">
-          <text class="text">其他方式登录</text>
-        </view>
-      </view>
+      <!-- 确认按钮 -->
+      <button 
+        class="confirm-btn" 
+        @click="submitUserInfo"
+        v-if="showUserInfo"
+      >
+        <text class="btn-text">确认</text>
+      </button>
       
       <!-- 用户协议 -->
       <view class="agreement">
@@ -102,158 +84,88 @@ import { userApi } from '@/api'
 export default {
   data() {
     return {
-      phone: '',
-      code: '',
-      counting: false,
-      count: 60,
-      agreed: false,
-      timer: null
+      showUserInfo: false,
+      formData: {
+        avatarUrl: '/static/images/default-avatar.png',
+        nickName: '',
+        code: '', // 微信登录code
+        phoneCode: '' // 手机号获取的code
+      },
+      agreed: false
     }
   },
   mounted() {
     console.log('userApi:', userApi) // 检查 API 对象
   },
   methods: {
-    // 发送验证码
-    sendCode() {
-      if (!this.phone) {
-        return uni.showToast({
-          title: '请输入手机号',
-          icon: 'none'
-        })
-      }
-      if (!/^1[3-9]\d{9}$/.test(this.phone)) {
-        return uni.showToast({
-          title: '手机号格式不正确',
-          icon: 'none'
-        })
-      }
-      
-      // 开始倒计时
-      this.counting = true
-      this.count = 60
-      this.timer = setInterval(() => {
-        if (this.count > 0) {
-          this.count--
-        } else {
-          this.counting = false
-          clearInterval(this.timer)
-        }
-      }, 1000)
-      
-      // TODO: 调用发送验证码接口
-      uni.showToast({
-        title: '验证码发送成功',
-        icon: 'success'
-      })
-    },
-    
-    // 手机号登录
-    async handleLogin() {
-      if (!this.agreed) {
-        return uni.showToast({
-          title: '请先同意用户协议',
-          icon: 'none'
-        })
-      }
-      if (!this.phone || !this.code) {
-        return uni.showToast({
-          title: '请输入手机号和验证码',
-          icon: 'none'
-        })
-      }
-      
-      try {
-        const result = await userApi.login({
-          phone: this.phone,
-          code: this.code
-        })
-        
-        // 保存登录信息
-        uni.setStorageSync('token', result.token)
-        uni.setStorageSync('userInfo', result.userInfo)
-        
-        uni.showToast({
-          title: '登录成功',
-          icon: 'success',
-          success: () => {
-            setTimeout(() => {
-              const pages = getCurrentPages()
-              if (pages.length > 1) {
-                uni.navigateBack()
-              } else {
-                uni.switchTab({
-                  url: '/pages/index/index'
-                })
-              }
-            }, 1500)
-          }
-        })
-      } catch (error) {
-        console.error('登录失败:', error)
-      }
-    },
-    
-    // 获取用户信息
-    async getUserProfile() {
-      if (!this.agreed) {
-        return uni.showToast({
-          title: '请先同意用户协议',
-          icon: 'none'
-        })
-      }
-      
-      try {
-        // 1. 获取用户信息
-        const { userInfo } = await uni.getUserProfile({
-          desc: '用于完善会员资料'
-        })
-        
-        // 2. 进行微信登录
-        this.handleWxLogin(userInfo)
-      } catch (error) {
-        console.error('获取用户信息失败:', error)
-        uni.showToast({
-          title: '获取用户信息失败',
-          icon: 'none'
-        })
-      }
-    },
-    
     // 微信登录
-    async handleWxLogin(userInfo) {
+    async handleWxLogin(e) {
+      if (!this.agreed) {
+        return uni.showToast({
+          title: '请先同意用户协议',
+          icon: 'none'
+        })
+      }
       try {
-        // 获取微信登录凭证
+        // 获取登录code
         const { code } = await uni.login({
           provider: 'weixin'
         })
-
-        // 将 code 发送到后端
-        // const response = await uni.request({
-        //   url: 'http://localhost:8080/wx/login',
-        //   method: 'POST',
-        //   data: { code }
-        // });
-
-        //console.log('后端返回:', response.data);
         
-        console.log('微信登录凭证:', code)
+        this.formData.code = code
         
-        console.log('用户信息:', userInfo)
-        
-        // 临时使用模拟数据
-        const mockResult = {
-          token: 'mock_token_' + Date.now(),
-          userInfo: {
-            ...userInfo,
-            id: 1
-          }
+        if (true) {
+          this.formData.phoneCode = '15848405698'
+          // 显示填写用户信息的表单
+          this.showUserInfo = true
+        } else {
+          uni.showToast({
+            title: '获取手机号失败',
+            icon: 'none'
+          })
         }
-        
+      } catch (error) {
+        console.error('微信登录失败:', error)
+        uni.showToast({
+          title: '登录失败',
+          icon: 'none'
+        })
+      }
+    },
+    
+    // 选择头像
+    onChooseAvatar(e) {
+      this.formData.avatarUrl = e.detail.avatarUrl
+    },
+    
+    // 输入昵称
+    onNickNameInput(e) {
+      this.formData.nickName = e.detail.value
+    },
+    
+    // 提交用户信息
+    async submitUserInfo() {
+      if (!this.formData.nickName) {
+        return uni.showToast({
+          title: '请输入昵称',
+          icon: 'none'
+        })
+      }
+
+      try {
+        const result = await userApi.wxLogin({
+          avatarUrl: this.formData.avatarUrl,
+          code: this.formData.code,
+          phoneCode: this.formData.phoneCode,
+          nickName: this.formData.nickName,
+        })
+
         // 保存登录信息
-        uni.setStorageSync('token', mockResult.token)
-        uni.setStorageSync('userInfo', mockResult.userInfo)
-        
+        console.log('result:', result)
+        uni.setStorageSync('token', result.token)
+        uni.setStorageSync('session_key', result.sessionKey)
+        uni.setStorageSync('userInfo', result.userInfo)
+
         uni.showToast({
           title: '登录成功',
           icon: 'success',
@@ -271,18 +183,12 @@ export default {
           }
         })
       } catch (error) {
-        console.error('微信登录失败:', error)
+        console.error('提交用户信息失败:', error)
         uni.showToast({
-          title: error.errMsg || '登录失败',
+          title: '登录失败',
           icon: 'none'
         })
       }
-    }
-  },
-  beforeDestroy() {
-    // 清除定时器
-    if (this.timer) {
-      clearInterval(this.timer)
     }
   }
 }
@@ -556,5 +462,69 @@ export default {
 
 .agreement .link {
   color: var(--primary-color);
+}
+
+.user-info-box {
+  padding: 30rpx 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.avatar-wrapper {
+  background: none;
+  padding: 0;
+  width: 160rpx;
+  height: 160rpx;
+  border-radius: 50%;
+  overflow: hidden;
+  margin-bottom: 30rpx;
+  position: relative;
+}
+
+.avatar-wrapper::after {
+  border: none;
+}
+
+.avatar {
+  width: 100%;
+  height: 100%;
+}
+
+.tips {
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(0,0,0,0.5);
+  color: #fff;
+  font-size: 20rpx;
+  text-align: center;
+  padding: 4rpx 0;
+}
+
+.nickname-input {
+  width: 100%;
+  height: 80rpx;
+  background: #f7f9fc;
+  border-radius: 40rpx;
+  padding: 0 40rpx;
+  font-size: 28rpx;
+  margin-top: 20rpx;
+}
+
+.confirm-btn {
+  width: 100%;
+  height: 88rpx;
+  line-height: 88rpx;
+  background: var(--primary-color);
+  color: #fff;
+  font-size: 32rpx;
+  border-radius: 44rpx;
+  margin-top: 40rpx;
+}
+
+.confirm-btn:active {
+  opacity: 0.9;
 }
 </style> 
